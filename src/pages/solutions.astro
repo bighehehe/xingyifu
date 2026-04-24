@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { SOLUTIONS_DATA } from '../constants';
+---
+
+<Layout title="行业解决方案 - 星驿付">
+  <Navbar />
+  <main class="flex-grow pb-8">
+    <div class="pt-20 min-h-screen bg-white">
+      <div class="bg-brand-900 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 class="text-3xl md:text-5xl font-bold text-white mb-6 text-center">行业解决方案</h1>
+          <p class="text-xl text-blue-200 max-w-3xl mx-auto text-center">
+            深入洞察行业痛点，为您量身定制的数字化经营方案。不仅是支付，更是管理。
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="space-y-32">
+          {SOLUTIONS_DATA.map((solution, idx) => (
+            <div class={`flex flex-col lg:flex-row gap-16 items-center ${idx % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
+              <div class="flex-1 w-full relative">
+                <div class="absolute inset-0 bg-brand-500 rounded-2xl transform rotate-3 opacity-10"></div>
+                <img 
+                  src={solution.image} 
+                  alt={solution.title} 
+                  class="rounded-2xl shadow-2xl w-full object-cover h-96 relative z-10"
+                />
+              </div>
+              <div class="flex-1 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-700 rounded-full text-sm font-semibold">
+                  {solution.icon && (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      {solution.icon.name === 'ShoppingBag' && <><path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/></>}
+                      {solution.icon.name === 'Utensils' && <><path d="M3 2v1c0 1 2 1 2 2S3 6 3 7s2 1 2 2-2 1-2 2 2 1 2 2"/><path d="M18 2v1c0 1-2 1-2 2s2 1 2 2-2 1-2 2 2 1 2 2"/><path d="M21 13V2"/><path d="M15 13V2"/><path d="M12 22v-5"/><path d="M9 13V2"/><path d="M6 13V2"/></>}
+                      {solution.icon.name === 'Coffee' && <><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/></>}
+                      {solution.icon.name === 'Music' && <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>}
+                    </svg>
+                  )}
+                  {solution.title}
+                </div>
+                <h2 class="text-3xl font-bold text-slate-900">{solution.title}解决方案</h2>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                  {solution.description} 针对该行业的高频交易、复杂分账、会员留存等问题，我们提供了一站式的软硬件服务体系。
+                </p>
+                <div class="grid grid-cols-2 gap-4 pt-4">
+                  {solution.benefits.map((benefit) => (
+                    <div class="flex items-center gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500 flex-shrink-0"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                      <span class="text-gray-700 font-medium">{benefit}</span>
+                    </div>
+                  ))}
+                </div>
+                <div class="pt-6">
+                   <button class="px-8 py-3 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors">
+                     获取方案详情
+                   </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

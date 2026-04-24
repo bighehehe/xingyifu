@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { PRODUCTS } from '../constants';
+
+const categories = ['全部', '智能POS', '电签POS'];
+---
+
+<Layout title="产品中心 - 星驿付">
+  <Navbar />
+  <main class="flex-grow pb-8">
+    <div class="pt-20 min-h-screen bg-slate-50 pb-20">
+      <div class="bg-brand-900 py-16 mb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 class="text-3xl md:text-5xl font-bold text-white mb-4">产品中心</h1>
+          <p class="text-blue-200 text-lg max-w-2xl mx-auto">
+            匠心打造，性能强劲。星驿付全系终端满足您从移动收款到柜台收银的多样化需求。
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Categories -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12" id="category-filters">
+          {categories.map((cat) => (
+            <button 
+              data-category={cat}
+              class={`category-btn px-6 py-2 rounded-full text-sm font-medium transition-colors ${cat === '全部' ? 'bg-brand-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="products-grid">
+          {PRODUCTS.map((product) => (
+            <div class="h-full product-item" data-category={product.category}>
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const buttons = document.querySelectorAll('.category-btn');
+  const items = document.querySelectorAll('.product-item');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const category = btn.getAttribute('data-category');
+      
+      buttons.forEach((b) => {
+        b.classList.remove('bg-brand-600', 'text-white');
+        b.classList.add('bg-white', 'text-gray-600', 'hover:bg-gray-100', 'border', 'border-gray-200');
+      });
+      btn.classList.remove('bg-white', 'text-gray-600', 'hover:bg-gray-100', 'border', 'border-gray-200');
+      btn.classList.add('bg-brand-600', 'text-white');
+
+      items.forEach((item) => {
+        const itemCategory = item.getAttribute('data-category');
+        if (category === '全部' || itemCategory === category) {
+          (item as HTMLElement).style.display = 'block';
+        } else {
+          (item as HTMLElement).style.display = 'none';
+        }
+      });
+    });
+  });
+</script>

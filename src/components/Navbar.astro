@@ -1,0 +1,170 @@
+---
+import { NAV_ITEMS } from '../constants';
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-brand-900/95 backdrop-blur-sm py-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0 flex items-center">
+        <a href="/" class="flex items-center gap-2 group">
+          <span id="nav-logo-text" class="font-bold text-2xl tracking-tighter text-white">
+            星驿付
+          </span>
+        </a>
+      </div>
+
+      <!-- Desktop Menu -->
+      <div id="desktop-menu" class="hidden md:flex items-center space-x-8">
+        {NAV_ITEMS.map((item) => {
+          const isActive = currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path));
+          return (
+            <a
+              href={item.path}
+              class={`text-sm font-medium transition-colors duration-200 relative group nav-link ${
+                isActive ? 'text-white' : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              {item.label}
+              <span class={`nav-underline absolute -bottom-1 left-0 w-full h-0.5 transform origin-left transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'} bg-white`}></span>
+            </a>
+          );
+        })}
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden flex items-center">
+        <button
+          id="mobile-menu-btn"
+          class="p-2 rounded-md focus:outline-none text-white hover:text-gray-200"
+        >
+          <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          <svg id="close-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden absolute w-full bg-white shadow-xl transition-all duration-300 ease-in-out max-h-0 opacity-0 overflow-hidden">
+    <div class="px-4 pt-2 pb-6 space-y-1">
+      {NAV_ITEMS.map((item) => {
+        const isActive = currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path));
+        return (
+          <a
+            href={item.path}
+            class={`block px-3 py-3 rounded-md text-base font-medium ${
+              isActive
+                ? 'bg-brand-50 text-brand-700 border-l-4 border-brand-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-brand-600'
+            }`}
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</nav>
+
+<script>
+  const navbar = document.getElementById('navbar');
+  const logoText = document.getElementById('nav-logo-text');
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.getElementById('menu-icon');
+  const closeIcon = document.getElementById('close-icon');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const navUnderlines = document.querySelectorAll('.nav-underline');
+  let isOpen = false;
+
+  function handleScroll() {
+    if (!navbar || !logoText) return;
+    const scrolled = window.scrollY > 20;
+    if (scrolled) {
+      navbar.classList.remove('bg-brand-900/95', 'backdrop-blur-sm', 'py-4');
+      navbar.classList.add('bg-white', 'shadow-md', 'py-2');
+      logoText.classList.remove('text-white');
+      logoText.classList.add('text-black');
+      mobileMenuBtn?.classList.remove('text-white', 'hover:text-gray-200');
+      mobileMenuBtn?.classList.add('text-black', 'hover:text-brand-600');
+      
+      // 菜单项文字变色
+      navLinks.forEach(link => {
+        if (link.classList.contains('text-white')) {
+          link.classList.remove('text-white');
+          link.classList.add('text-black');
+        }
+        if (link.classList.contains('text-gray-300')) {
+          link.classList.remove('text-gray-300');
+          link.classList.add('text-gray-800');
+        }
+        if (link.classList.contains('hover:text-white')) {
+          link.classList.remove('hover:text-white');
+          link.classList.add('hover:text-brand-600');
+        }
+      });
+      
+      // 下划线变色
+      navUnderlines.forEach(underline => {
+        if (underline.classList.contains('bg-white')) {
+          underline.classList.remove('bg-white');
+          underline.classList.add('bg-brand-600');
+        }
+      });
+    } else {
+      navbar.classList.add('bg-brand-900/95', 'backdrop-blur-sm', 'py-4');
+      navbar.classList.remove('bg-white', 'shadow-md', 'py-2');
+      logoText.classList.add('text-white');
+      logoText.classList.remove('text-black');
+      mobileMenuBtn?.classList.add('text-white', 'hover:text-gray-200');
+      mobileMenuBtn?.classList.remove('text-black', 'hover:text-brand-600');
+      
+      // 菜单项文字恢复
+      navLinks.forEach(link => {
+        if (link.classList.contains('text-black')) {
+          link.classList.remove('text-black');
+          link.classList.add('text-white');
+        }
+        if (link.classList.contains('text-gray-800')) {
+          link.classList.remove('text-gray-800');
+          link.classList.add('text-gray-300');
+        }
+        if (link.classList.contains('hover:text-brand-600')) {
+          link.classList.remove('hover:text-brand-600');
+          link.classList.add('hover:text-white');
+        }
+      });
+      
+      // 下划线恢复
+      navUnderlines.forEach(underline => {
+        if (underline.classList.contains('bg-brand-600')) {
+          underline.classList.remove('bg-brand-600');
+          underline.classList.add('bg-white');
+        }
+      });
+    }
+  }
+
+  function toggleMenu() {
+    isOpen = !isOpen;
+    if (!mobileMenu || !menuIcon || !closeIcon) return;
+    if (isOpen) {
+      mobileMenu.classList.remove('max-h-0', 'opacity-0');
+      mobileMenu.classList.add('max-h-96', 'opacity-100');
+      menuIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+    } else {
+      mobileMenu.classList.add('max-h-0', 'opacity-0');
+      mobileMenu.classList.remove('max-h-96', 'opacity-100');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    }
+  }
+
+  window.addEventListener('scroll', handleScroll);
+  mobileMenuBtn?.addEventListener('click', toggleMenu);
+  handleScroll();
+</script>
