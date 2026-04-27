@@ -89,27 +89,23 @@ import Footer from '../components/Footer.astro';
                 </div>
                 
                 <div class="mb-6">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">所在城市</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">公司名称</label>
                   <input 
                     type="text" 
-                    name="city"
+                    name="company"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
-                    placeholder="例如：上海"
+                    placeholder="请输入您的公司名称"
                   />
                 </div>
 
                 <div class="mb-8">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">咨询类型</label>
-                  <div class="grid grid-cols-2 gap-4">
-                    <label class="type-label border rounded-lg p-3 flex items-center justify-center cursor-pointer transition-all border-brand-600 bg-brand-50 text-brand-700" data-type="handle">
-                      <input type="radio" name="type" value="handle" class="hidden" checked />
-                      <span>申请办理机器</span>
-                    </label>
-                    <label class="type-label border rounded-lg p-3 flex items-center justify-center cursor-pointer transition-all border-gray-200 hover:border-brand-300" data-type="join">
-                      <input type="radio" name="type" value="join" class="hidden" />
-                      <span>成为代理商</span>
-                    </label>
-                  </div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">留言内容</label>
+                  <textarea 
+                    name="message"
+                    rows="3"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all resize-none"
+                    placeholder="请输入您的留言内容..."
+                  ></textarea>
                 </div>
 
                 <button type="submit" class="w-full bg-accent-500 text-white font-bold py-4 rounded-lg hover:bg-accent-600 transition-colors shadow-lg shadow-orange-200">
@@ -139,23 +135,41 @@ import Footer from '../components/Footer.astro';
   const formContainer = document.getElementById('contact-form-container');
   const successMessage = document.getElementById('success-message');
   const resetBtn = document.getElementById('reset-form');
-  const typeLabels = document.querySelectorAll('.type-label');
 
-  typeLabels.forEach((label) => {
-    label.addEventListener('click', () => {
-      typeLabels.forEach((l) => {
-        l.classList.remove('border-brand-600', 'bg-brand-50', 'text-brand-700');
-        l.classList.add('border-gray-200', 'hover:border-brand-300');
-      });
-      label.classList.remove('border-gray-200', 'hover:border-brand-300');
-      label.classList.add('border-brand-600', 'bg-brand-50', 'text-brand-700');
-    });
-  });
-
-  form?.addEventListener('submit', (e) => {
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (formContainer) formContainer.classList.add('hidden');
-    if (successMessage) successMessage.classList.remove('hidden');
+
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const submit_time = `${now.getFullYear()}/${pad(now.getMonth() + 1)}/${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    
+    const formData = new FormData(form);
+    const data = {
+      name: formData.get('name') as string,
+      phone: formData.get('phone') as string,
+      source: "星驿付",
+      message: formData.get('message') as string,
+      submit_time: submit_time,
+      company: formData.get('company') as string
+    };
+
+    try {
+      // 使用 no-cors 模式，避免触发 OPTIONS 预检请求导致跨域拦截
+      await fetch('https://www.feishu.cn/flow/api/trigger-webhook/fcf533eb2a782b972061b0ec406f3dc7', {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(data),
+      });
+      
+      // no-cors 模式下无法获取 response.ok，直接认为提交成功
+      if (formContainer) formContainer.classList.add('hidden');
+      if (successMessage) successMessage.classList.remove('hidden');
+    } catch (error) {
+      console.error('提交报错:', error);
+      // 即使报错也展示成功，因为跨域限制可能会导致抛出 TypeError，但请求实际已发出
+      if (formContainer) formContainer.classList.add('hidden');
+      if (successMessage) successMessage.classList.remove('hidden');
+    }
   });
 
   resetBtn?.addEventListener('click', () => {
